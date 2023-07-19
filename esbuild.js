@@ -17,7 +17,8 @@ let entryPlugin = {
         export {activate}
         `
       } else if (args.path == 'server.ts') {
-        contents = `require('./server/node/htmlServerMain.ts')`
+        //contents = `require('./server/node/htmlServerMain.ts')`
+        contents = `require('./server/smarty/server.ts')`
       } else {
         throw new Error('Bad path')
       }

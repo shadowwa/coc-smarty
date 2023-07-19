@@ -276,7 +276,7 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 		try {
 			const version = textDocument.version;
 			const diagnostics: Diagnostic[] = [];
-			if (textDocument.languageId === 'html') {
+			if (textDocument.languageId === 'html' || textDocument.languageId === 'smarty') {
 				const modes = languageModes.getAllModesInDocument(textDocument);
 				const settings = await getDocumentSettings(textDocument, () => modes.some(m => !!m.doValidation));
 				const latestTextDocument = documents.get(textDocument.uri);

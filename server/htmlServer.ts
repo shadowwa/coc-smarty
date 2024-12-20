@@ -193,7 +193,7 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 
 		const capabilities: ServerCapabilities = {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
-			completionProvider: clientSnippetSupport ? { resolveProvider: true, triggerCharacters: ['.', ':', '<', '"', '=', '/'] } : undefined,
+			completionProvider: clientSnippetSupport ? { resolveProvider: true, triggerCharacters: ['.', ':', '<', '"', '\'', '=', '/'] } : undefined,
 			hoverProvider: true,
 			documentHighlightProvider: true,
 			documentRangeFormattingProvider: initializationOptions?.provideFormatter === true,

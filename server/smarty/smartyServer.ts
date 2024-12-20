@@ -971,8 +971,10 @@ async function getCompletions(_textDocumentPosition: TextDocumentPositionParams,
 	)
 	{
 		let dataIdx = 0;
+		let seenModifiers: Map<string,boolean> = new Map();
 		for (let smartyModifier of smartyModifiers)
 		{
+			seenModifiers.set(smartyModifier, true);
 			completionSuggestions.push({
 				label: smartyModifier,
 				kind: CompletionItemKind.Method,
@@ -982,8 +984,12 @@ async function getCompletions(_textDocumentPosition: TextDocumentPositionParams,
 		// Custom modifiers
 		for (let availablePlugin of availablePlugins)
 		{
-			if (availablePlugin.type === SmartyPluginType.modifier)
+			if (
+				availablePlugin.type === SmartyPluginType.modifier &&
+				!seenModifiers.has(availablePlugin.pluginName)
+			)
 			{
+				seenModifiers.set(availablePlugin.pluginName, true);
 				completionSuggestions.push({
 					label: availablePlugin.pluginName,
 					kind: CompletionItemKind.Method,

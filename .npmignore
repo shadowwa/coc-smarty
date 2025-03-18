@@ -3,3 +3,11 @@ tsconfig.json
 *.map
 .vim
 server
+esbuild.js
+yarn.lock
+.github
+## Auto-generated tag files
+tags
+GTAGS
+GRTAGS
+GPATH

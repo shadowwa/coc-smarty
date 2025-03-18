@@ -1,6 +1,5 @@
-## 1.8.0
+# History
 
-- Remove configuration `html.format.endWithNewline`>
-- Remove configuration `html.validate.html`.
-- Remove configuration `html.enable`.
-- Check format configuration before register formatter provider.
+## 1.0.0
+
+- based on coc-html 1.8.0 and vscode-smarty 1.0.17

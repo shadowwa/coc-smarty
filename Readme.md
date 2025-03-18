@@ -1,27 +1,24 @@
-# coc-html
+# coc-smarty
 
-Html language server extension for [coc.nvim](https://github.com/neoclide/coc.nvim).
+[Smarty](https://smarty-php.github.io/smarty/stable/) language server extension for [coc.nvim](https://github.com/neoclide/coc.nvim).
 
-Code changed from html extension of [VSCode](https://github.com/Microsoft/vscode/tree/master/extensions/html-language-features)
+Code changed from:
 
-## Supporting
-
-If you like this extension, consider supporting me on Patreon or PayPal:
-
-<a href="https://www.patreon.com/chemzqm"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Patreon donate button" /> </a>
-<a href="https://www.paypal.com/paypalme/chezqm"><img src="https://werwolv.net/assets/paypal_banner.png" alt="PayPal donate button" /> </a>
+- [Html language server extension](https://github.com/neoclide/coc-html) for [coc.nvim](https://github.com/neoclide/coc.nvim).
+- Html extension of [VSCode](https://github.com/Microsoft/vscode/tree/master/extensions/html-language-features)
+- VSCode [Smarty Language Server](https://github.com/ssigwart/vscode-smarty).
 
 ## Install
 
 In your vim/neovim, run command:
 
 ```
-:CocInstall coc-html
+:CocInstall coc-smarty
 ```
 
 ## Features
 
-- Completion provider
+- Completion provider (smarty & html)
 - Formatting
 - Document Symbols & Highlights
 - Document Links
@@ -32,6 +29,8 @@ In your vim/neovim, run command:
 
 Checkout `:h coc-configuration` for how to use configurations with coc.nvim.
 
+- `smarty.maxNumberOfDiagnosticMsgs`: Controls the maximum number of diagnostic messages (E.g. XSS warnings) to generate  default: `1000`
+- `smarty.disableHtmlAttributeCompletionQuotes`: strip quotes when completing an HTML attribute  default: `false`
 - `html.execArgv`:  default: `[]`
 - `html.filetypes`:  default: `["html","handlebars","htmldjango","blade"]`
 - `html.customData`:  default: `[]`
@@ -71,6 +70,19 @@ A: Some completion item requires insert position after current cursor position
 which is invalid for `<C-n>` and `<C-p>` on vim, you can use `<up>` and `<down>`
 key for selection, or use api `coc#_select_confirm()` to select and confirm
 selection which is recommended.
+
+## Additional useful plugins
+
+* [smarty.vim](https://github.com/shadowwa/smarty.vim) updated syntax, indent and ftplugin
+* [vim-textobj-smarty](https://github.com/kana/vim-textobj-smarty/) add textobj
+  for smarty, allowing to work on loop and conditional code with `*ak` and on
+  content only with `*ik` ([vim-textobj-user](https://github.com/kana/vim-textobj-user)
+  is also required)
+* [vim-snippets](https://github.com/honza/vim-snippets) is a library of
+  snippets for multiple languages, including Smarty. Works with:
+  * [snipmate](https://github.com/garbas/vim-snipmate),
+  * [ultisnips](https://github.com/SirVer/ultisnips) or
+  * [coc-snippets](https://github.com/neoclide/coc-snippets) if you are using [coc](https://github.com/neoclide/coc.nvim)
 
 ## License
 

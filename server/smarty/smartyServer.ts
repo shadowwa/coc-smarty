@@ -847,6 +847,13 @@ async function getCompletions(_textDocumentPosition: TextDocumentPositionParams,
 			)
 			{
 				completionSuggestions.push({
+					detail: SmartyPluginType[availablePlugin.type] + ' ' + availablePlugin.pluginName + '(' + availablePlugin.possibleAttrs + ')',
+					documentation: {
+						kind: 'markdown',
+						value: '```php\n' + (availablePlugin.comment ?? '') + '\n```\n' +
+							availablePlugin.path + ':' +
+							availablePlugin.definitionLine,
+					},
 					label: availablePlugin.pluginName,
 					kind: CompletionItemKind.Method,
 					data: dataIdx++
@@ -991,6 +998,13 @@ async function getCompletions(_textDocumentPosition: TextDocumentPositionParams,
 			{
 				seenModifiers.set(availablePlugin.pluginName, true);
 				completionSuggestions.push({
+					detail: SmartyPluginType[availablePlugin.type] + ' |' + availablePlugin.pluginName,
+					documentation: {
+						kind: 'markdown',
+						value: '```php\n' + (availablePlugin.comment ?? '') + '\n```\n' +
+							availablePlugin.path + ':' +
+							availablePlugin.definitionLine,
+					},
 					label: availablePlugin.pluginName,
 					kind: CompletionItemKind.Method,
 					data: dataIdx++

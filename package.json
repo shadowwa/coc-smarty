@@ -1,6 +1,6 @@
 {
   "name": "coc-smarty",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Smarty extension for coc.nvim",
   "main": "lib/index.js",
   "publisher": "Shad",
@@ -291,8 +291,8 @@
     "url": "https://github.com/shadowwa/coc-smarty/issues"
   },
   "devDependencies": {
-    "@types/node": "^12.12.0",
-    "coc.nvim": "^0.0.81-next.8",
+    "@types/node": "^14.14.0",
+    "coc.nvim": "^0.0.83-next.9",
     "esbuild": "^0.14.7",
     "vscode-css-languageservice": "^6.1.1",
     "vscode-html-languageservice": "^5.0.2",

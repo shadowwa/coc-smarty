@@ -150,9 +150,9 @@ esbuild@^0.14.7:
     esbuild-windows-arm64 "0.14.54"
 
 php-parser@^3.0.3:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/php-parser/-/php-parser-3.2.2.tgz#49c6fac29fbf8f995e1b8609ad52bd41b1ecda07"
-  integrity sha512-voj3rzCJmEbwHwH3QteON28wA6K+JbcaJEofyUZkUXmcViiXofjbSbcE5PtqtjX6nstnnAEYCFoRq0mkjP5/cg==
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/php-parser/-/php-parser-3.2.4.tgz#56f97438a46c54ce0e78a8357782402f9530f892"
+  integrity sha512-X1HIaSHCb9aAReEqb+U/AAB3evE1iKD6tAY/lw9+wT4koCkWhg22m4LNtFGwd3Qv4PYIL2+zl+oXh00ALKya0Q==
 
 typescript@^4.3:
   version "4.9.5"

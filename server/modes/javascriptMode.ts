@@ -15,11 +15,12 @@ import { HTMLDocumentRegions } from './embeddedSupport';
 
 import * as ts from 'typescript';
 import { getSemanticTokens, getSemanticTokenLegend } from './javascriptSemanticTokens';
+import { MarkupKind } from 'vscode-languageserver';
 
 const JS_WORD_REGEX = /(-?\d*\.\d\w*)|([^\`\~\!\@\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g;
 
 function getLanguageServiceHost(scriptKind: ts.ScriptKind) {
-	const compilerOptions: ts.CompilerOptions = { allowNonTsExtensions: true, allowJs: true, lib: ['lib.es2020.full.d.ts'], target: ts.ScriptTarget.Latest, moduleResolution: ts.ModuleResolutionKind.Classic, experimentalDecorators: false };
+	const compilerOptions: ts.CompilerOptions = { allowNonTsExtensions: true, allowJs: true, lib: ['lib.es2020.full.d.ts'], target: ts.ScriptTarget.Latest, module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Classic, experimentalDecorators: false };
 
 	let currentTextDocument = TextDocument.create('init', 'javascript', 1, '');
 	const jsLanguageService = import(/* webpackChunkName: "javascriptLibs" */ './javascriptLibs').then(libs => {
@@ -109,18 +110,21 @@ export function getJavaScriptMode(documentRegions: LanguageModelCache<HTMLDocume
 		},
 		async doValidation(document: TextDocument, settings = workspace.settings): Promise<Diagnostic[]> {
 			host.getCompilationSettings()['experimentalDecorators'] = settings && settings.javascript && settings.javascript.implicitProjectConfig.experimentalDecorators;
-			const jsDocument = jsDocuments.get(document);
-			const languageService = await host.getLanguageService(jsDocument);
-			const syntaxDiagnostics: ts.Diagnostic[] = languageService.getSyntacticDiagnostics(jsDocument.uri);
-			const semanticDiagnostics = languageService.getSemanticDiagnostics(jsDocument.uri);
-			return syntaxDiagnostics.concat(semanticDiagnostics).filter(d => !ignoredErrors.includes(d.code)).map((diag: ts.Diagnostic): Diagnostic => {
-				return {
-					range: convertRange(jsDocument, diag),
-					severity: DiagnosticSeverity.Error,
-					source: languageId,
-					message: ts.flattenDiagnosticMessageText(diag.messageText, '\n')
-				};
-			});
+			const diagnostics: Diagnostic[] = [];
+			for (const jsDocument of documentRegions.get(document).getEmbeddedDocuments(languageId)) {
+				const languageService = await host.getLanguageService(jsDocument);
+				const syntaxDiagnostics: ts.Diagnostic[] = languageService.getSyntacticDiagnostics(jsDocument.uri);
+				const semanticDiagnostics = languageService.getSemanticDiagnostics(jsDocument.uri);
+				diagnostics.push(...syntaxDiagnostics.concat(semanticDiagnostics).filter(d => !ignoredErrors.includes(d.code)).map((diag: ts.Diagnostic): Diagnostic => {
+					return {
+						range: convertRange(jsDocument, diag),
+						severity: DiagnosticSeverity.Error,
+						source: languageId,
+						message: ts.flattenDiagnosticMessageText(diag.messageText, '\n')
+					};
+				}));
+			}
+			return diagnostics;
 		},
 		async doComplete(document: TextDocument, position: Position, _documentContext: DocumentContext): Promise<CompletionList> {
 			const jsDocument = jsDocuments.get(document);
@@ -169,10 +173,16 @@ export function getJavaScriptMode(documentRegions: LanguageModelCache<HTMLDocume
 			const jsLanguageService = await host.getLanguageService(jsDocument);
 			const info = jsLanguageService.getQuickInfoAtPosition(jsDocument.uri, jsDocument.offsetAt(position));
 			if (info) {
-				const contents = ts.displayPartsToString(info.displayParts);
+				const signature = ts.displayPartsToString(info.displayParts);
+				const documentation = ts.displayPartsToString(info.documentation);
+				const tags = tagsToMarkdown(info.tags);
+				const parts = [];
+				if (signature) parts.push(['```typescript', signature, '```'].join('\n'));
+				if (documentation) parts.push(documentation);
+				if (tags) parts.push(tags);
 				return {
 					range: convertRange(jsDocument, info.textSpan),
-					contents: ['```typescript', contents, '```'].join('\n')
+					contents: { kind: MarkupKind.Markdown, value: parts.join('\n\n') }
 				};
 			}
 			return null;
@@ -399,6 +409,23 @@ export function getJavaScriptMode(documentRegions: LanguageModelCache<HTMLDocume
 			jsDocuments.dispose();
 		}
 	};
+}
+
+function tagToMarkdown(tag: ts.JSDocTagInfo): string {
+	const text = ts.displayPartsToString(tag.text);
+	if (['param', 'template', 'augments', 'extends'].includes(tag.name)) {
+		const match = text.match(/^(\S+)\s*-?\s*(.*)$/s);
+		if (match) {
+			const label = `*@${tag.name}* \`${match[1]}\``;
+			return match[2] ? label + (match[2].match(/\r\n|\n/g) ? '  \n' + match[2] : ` — ${match[2]}`) : label;
+		}
+	}
+	const label = `*@${tag.name}*`;
+	return text ? label + (text.match(/\r\n|\n/g) ? '  \n' + text : ` — ${text}`) : label;
+}
+
+function tagsToMarkdown(tags: ts.JSDocTagInfo[] | undefined): string {
+	return tags?.map(tagToMarkdown).join('  \n\n') ?? '';
 }
 
 

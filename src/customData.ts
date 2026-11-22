@@ -17,6 +17,7 @@ export function getCustomDataSource(toDispose: Disposable[]) {
   collectInExtensions(localExtensionUris, externalExtensionUris)
 
   const onChange = new Emitter<void>()
+  toDispose.push(onChange)
   toDispose.push(
     extensions.onDidActiveExtension(_ => {
       const newLocalExtensionUris = new Set<string>()
@@ -88,7 +89,7 @@ function hasChanges(s1: Set<string>, s2: Set<string>) {
 }
 
 function isURI(uriOrPath: string) {
-  return /^(?<scheme>\w[\w\d+.-]*):/.test(uriOrPath)
+  return /^\w[\w\d+.-]*:/.test(uriOrPath)
 }
 
 function collectInWorkspaces(workspaceUris: Set<string>): void {

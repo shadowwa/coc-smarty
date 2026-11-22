@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="128" height="128" alt="coc-smarty logo">
+</p>
+
 # coc-smarty
 
 [Smarty](https://smarty-php.github.io/smarty/stable/) language server extension for [coc.nvim](https://github.com/neoclide/coc.nvim).
@@ -73,16 +77,30 @@ selection which is recommended.
 
 ## Additional useful plugins
 
-* [smarty.vim](https://github.com/shadowwa/smarty.vim) updated syntax, indent and ftplugin
-* [vim-textobj-smarty](https://github.com/kana/vim-textobj-smarty/) add textobj
+- [smarty.vim](https://github.com/shadowwa/smarty.vim) updated syntax, indent and ftplugin
+- [vim-textobj-smarty](https://github.com/kana/vim-textobj-smarty/) add textobj
   for smarty, allowing to work on loop and conditional code with `*ak` and on
   content only with `*ik` ([vim-textobj-user](https://github.com/kana/vim-textobj-user)
   is also required)
-* [vim-snippets](https://github.com/honza/vim-snippets) is a library of
+- [vim-snippets](https://github.com/honza/vim-snippets) is a library of
   snippets for multiple languages, including Smarty. Works with:
-  * [snipmate](https://github.com/garbas/vim-snipmate),
-  * [ultisnips](https://github.com/SirVer/ultisnips) or
-  * [coc-snippets](https://github.com/neoclide/coc-snippets) if you are using [coc](https://github.com/neoclide/coc.nvim)
+  - [snipmate](https://github.com/garbas/vim-snipmate),
+  - [ultisnips](https://github.com/SirVer/ultisnips) or
+  - [coc-snippets](https://github.com/neoclide/coc-snippets) if you are using [coc](https://github.com/neoclide/coc.nvim)
+
+## Development
+
+Use Node.js 22.15 or newer and npm 11.9.0. Install dependencies from the
+committed npm lockfile, then build and validate:
+
+```sh
+npm ci
+npm run build
+npm run lint
+npm test
+```
+
+The integration tests run both Neovim and Vim; both editors must be installed.
 
 ## License
 

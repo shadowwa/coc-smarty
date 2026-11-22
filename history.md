@@ -1,5 +1,9 @@
 # History
 
+## 1.3.0
+
+- update coc-html to 1.9.2
+
 ## 1.2.0
 
 - update tags and attributes for Smarty 5

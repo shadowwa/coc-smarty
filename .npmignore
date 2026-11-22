@@ -2,6 +2,10 @@ src
 tsconfig.json
 *.map
 .vim
+.codex
+.github
+AGENTS.md
+test
 server
 esbuild.js
 yarn.lock

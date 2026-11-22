@@ -1,4 +1,4 @@
-import { CancellationToken, Disposable, DocumentRangeSemanticTokensProvider, DocumentSelector, DocumentSemanticTokensProvider, ExtensionContext, FormattingOptions, LanguageClient, LanguageClientOptions, languages, NotificationType, ProviderResult, Range as LspRange, Range, RequestType, RequestType0, ServerOptions, services, TextDocument, TextDocumentIdentifier, TextEdit, TransportKind, workspace } from 'coc.nvim'
+import { CancellationToken, Disposable, DocumentRangeSemanticTokensProvider, DocumentSelector, DocumentSemanticTokensProvider, ExtensionContext, FormattingOptions, LanguageClient, LanguageClientOptions, languages, NotificationType, ProviderResult, Range as LspRange, Range, RequestType, RequestType0, ServerOptions, services, TextDocument, TextDocumentIdentifier, TextEdit, TransportKind, window, workspace } from 'coc.nvim'
 import { TextDecoder } from 'util'
 import { DocumentRangeFormattingRequest } from 'vscode-languageserver-protocol'
 import { Position } from 'vscode-languageserver-types'
@@ -116,7 +116,7 @@ async function realActivate(context: ExtensionContext, filetypes: string[]): Pro
   }
 
   subscriptions.push(serveFileSystemRequests(client, runtime))
-  client.onReady().then(() => {
+  void client.onReady().then(() => {
     // manually register / deregister format provider based on the `html.format.enable` setting avoiding issues with late registration. See #71652.
     updateFormatterRegistration()
     subscriptions.push({ dispose: () => rangeFormatting && rangeFormatting.dispose() })
@@ -124,10 +124,10 @@ async function realActivate(context: ExtensionContext, filetypes: string[]): Pro
 
     const customDataSource = getCustomDataSource(context.subscriptions)
     client.sendNotification(CustomDataChangedNotification.type, customDataSource.uris)
-    customDataSource.onDidChange(() => {
+    subscriptions.push(customDataSource.onDidChange(() => {
       client.sendNotification(CustomDataChangedNotification.type, customDataSource.uris)
-    })
-    client.onRequest(CustomDataContent.type, customDataSource.getContent)
+    }))
+    subscriptions.push(client.onRequest(CustomDataContent.type, customDataSource.getContent))
 
     const insertRequestor = (kind: 'autoQuote' | 'autoClose', document: TextDocument, position: Position): Promise<string> => {
       let param: AutoInsertParams = {
@@ -143,7 +143,7 @@ async function realActivate(context: ExtensionContext, filetypes: string[]): Pro
     activateAutoInsertion(insertRequestor, autoInsertionSupportedLanguages, context.subscriptions)
 
     if (typeof languages.registerDocumentSemanticTokensProvider === 'function') {
-      client.sendRequest(SemanticTokenLegendRequest.type).then(legend => {
+      void client.sendRequest(SemanticTokenLegendRequest.type).then(legend => {
         if (legend) {
           const provider: DocumentSemanticTokensProvider & DocumentRangeSemanticTokensProvider = {
             provideDocumentSemanticTokens(doc) {
@@ -170,10 +170,12 @@ async function realActivate(context: ExtensionContext, filetypes: string[]): Pro
           context.subscriptions.push(languages.registerDocumentSemanticTokensProvider(selector, provider, lspLegend))
           context.subscriptions.push(languages.registerDocumentRangeSemanticTokensProvider(selector, provider, lspLegend))
         }
+      }).catch(error => {
+        client.handleFailedRequest(SemanticTokenLegendRequest.type, undefined, error, null)
       })
     }
-  }, _e => {
-    // noop
+  }).catch(error => {
+    void window.showErrorMessage(`HTML language server setup failed: ${error instanceof Error ? error.message : String(error)}`)
   })
 
   subscriptions.push(
@@ -184,19 +186,21 @@ async function realActivate(context: ExtensionContext, filetypes: string[]): Pro
 export async function activate(context: ExtensionContext): Promise<void> {
   const config = workspace.getConfiguration('html')
   const filetypes = config.get<string[]>('filetypes', ['html', 'handlebars', 'htmldjango', 'blade'])
-  let activated = false
   for (let doc of workspace.textDocuments) {
-    if (filetypes.includes(doc.languageId) && !activated) {
-      activated = true
-      realActivate(context, filetypes)
+    if (filetypes.includes(doc.languageId)) {
+      await realActivate(context, filetypes)
+      return
     }
   }
-  if (!activated) {
-    let disposable = workspace.onDidOpenTextDocument(e => {
-      if (activated || !filetypes.includes(e.languageId)) return
+  let activating = false
+  const disposable = workspace.onDidOpenTextDocument(e => {
+    if (activating || !filetypes.includes(e.languageId)) return
+    activating = true
+    void realActivate(context, filetypes).then(() => {
       disposable.dispose()
-      activated = true
-      realActivate(context, filetypes)
-    }, null, context.subscriptions)
-  }
+    }).catch(error => {
+      activating = false
+      void window.showErrorMessage(`Failed to start HTML language server: ${error instanceof Error ? error.message : String(error)}`)
+    })
+  }, null, context.subscriptions)
 }

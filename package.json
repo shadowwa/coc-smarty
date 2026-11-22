@@ -1,11 +1,12 @@
 {
   "name": "coc-smarty",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Smarty extension for coc.nvim",
   "main": "lib/index.js",
   "publisher": "Shad",
   "engines": {
-    "coc": "^0.0.80"
+    "coc": "^0.0.80",
+    "node": ">=22"
   },
   "keywords": [
     "html",
@@ -15,7 +16,12 @@
   ],
   "scripts": {
     "build": "node esbuild.js",
-    "prepare": "node esbuild.js"
+    "lint": "tsc --noEmit",
+    "prepare": "node esbuild.js",
+    "test": "npm run test:integration:nvim && npm run test:integration:vim",
+    "test:integration": "coc-test \"test/**/*.test.ts\"",
+    "test:integration:nvim": "coc-test --nvim \"test/**/*.test.ts\"",
+    "test:integration:vim": "coc-test --vim \"test/**/*.test.ts\""
   },
   "activationEvents": [
     "*"
@@ -291,21 +297,28 @@
     "url": "https://github.com/shadowwa/coc-smarty/issues"
   },
   "devDependencies": {
-    "@types/node": "^14.14.0",
-    "coc.nvim": "^0.0.83-next.9",
-    "esbuild": "^0.14.7",
-    "vscode-css-languageservice": "^6.1.1",
-    "vscode-html-languageservice": "^5.0.2",
-    "vscode-languageserver": "^8.1.0-next.1",
-    "vscode-languageserver-textdocument": "^1.0.7",
-    "vscode-languageserver-types": "3.16.0",
-    "vscode-languageserver-protocol": "^3.17.2",
+    "@types/node": "^20.19.43",
+    "coc-test": "^0.2.2",
+    "coc.nvim": "^0.0.83-next.25",
+    "esbuild": "^0.28.2",
     "php-parser": "^3.0.3",
+    "vscode-css-languageservice": "7.0.0-next.2",
+    "vscode-html-languageservice": "6.0.0-next.2",
+    "vscode-languageserver": "^10.1.1",
+    "vscode-languageserver-protocol": "^3.18.3",
+    "vscode-languageserver-textdocument": "^1.0.14",
+    "vscode-languageserver-types": "3.18.3",
     "vscode-nls": "^5.2.0",
-    "vscode-uri": "^3.0.6"
+    "vscode-uri": "^3.2.0"
   },
   "dependencies": {
-    "typescript": "^4.3"
+    "typescript": "6.0.3"
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "coc-test": {
+    "entryFile": "src/index.ts"
+  },
+  "packageManager": "npm@11.9.0"
 }

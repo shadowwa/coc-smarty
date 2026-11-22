@@ -36,7 +36,7 @@ async function start() {
     define: {'process.env.NODE_ENV': JSON.stringify("production")},
     bundle: true,
     platform: 'node',
-    target: 'node14.14',
+    target: 'node22',
     mainFields: ['module', 'main'],
     minify: true,
     sourcemap: true,
@@ -48,4 +48,5 @@ async function start() {
 
 start().catch(e => {
   console.error(e)
+  process.exitCode = 1
 })

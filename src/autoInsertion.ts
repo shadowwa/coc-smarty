@@ -4,14 +4,24 @@ export function activateAutoInsertion(provider: (kind: 'autoQuote' | 'autoClose'
 
   let bufnr: number
   let anyIsEnabled = false
-  let timeout: NodeJS.Timer | undefined
+  let timeout: ReturnType<typeof setTimeout> | undefined
+  let disposed = false
   const isEnabled = {
     'autoQuote': false,
     'autoClose': false
   }
   workspace.document.then(doc => {
+    if (disposed) return
     bufnr = doc.bufnr
     updateEnabledState(doc.bufnr)
+  })
+
+  disposables.push({
+    dispose: () => {
+      disposed = true
+      if (timeout) clearTimeout(timeout)
+      timeout = undefined
+    }
   })
 
   function updateEnabledState(bufnr: number) {
@@ -34,6 +44,7 @@ export function activateAutoInsertion(provider: (kind: 'autoQuote' | 'autoClose'
     if (!doc) {
       doc = await workspace.document
     }
+    if (disposed) return
     updateEnabledState(doc ? doc.bufnr : -1)
   }, null, disposables)
 
@@ -57,8 +68,10 @@ export function activateAutoInsertion(provider: (kind: 'autoQuote' | 'autoClose'
     const changedtick = document.changedtick
       ;(document as any).patchChange(true)
     timeout = setTimeout(() => {
-      provider(kind, document.textDocument, position).then(text => {
-        if (text && isEnabled[kind]) {
+      timeout = undefined
+      if (disposed) return
+      void Promise.resolve().then(() => provider(kind, document.textDocument, position)).then(text => {
+        if (!disposed && text && isEnabled[kind]) {
           if (bufnr == document.bufnr && document.changedtick == changedtick) {
             let end:Position = {character: position.character, line: position.line}
             if (character === '/') {
@@ -72,8 +85,7 @@ export function activateAutoInsertion(provider: (kind: 'autoQuote' | 'autoClose'
             snippetManager.insertSnippet(text, true, {start: position, end})
           }
         }
-      })
-      timeout = undefined
+      }, () => undefined)
     }, 100)
   }
 }

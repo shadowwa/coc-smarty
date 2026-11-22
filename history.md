@@ -3,6 +3,7 @@
 ## 1.3.0
 
 - update coc-html to 1.9.2
+- update vscode-smarty to 1.0.20
 
 ## 1.2.0
 

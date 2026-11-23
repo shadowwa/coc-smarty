@@ -1,9 +1,10 @@
 # History
 
-## 1.3.0
+## 1.3.1
 
 - update coc-html to 1.9.2
 - update vscode-smarty to 1.0.20
+- update workflows
 
 ## 1.2.0
 

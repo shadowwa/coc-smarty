@@ -312,7 +312,7 @@
     "vscode-uri": "^3.2.0"
   },
   "dependencies": {
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "allowScripts": {
     "esbuild@0.28.2": true

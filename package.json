@@ -297,7 +297,7 @@
     "url": "https://github.com/shadowwa/coc-smarty/issues"
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^26.6.6",
     "coc-test": "^0.2.2",
     "coc.nvim": "^0.0.83-next.25",
     "esbuild": "^0.28.2",
